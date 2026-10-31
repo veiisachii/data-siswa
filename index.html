@@ -1,445 +1,614 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Biodata Siswa</title><!-- Font Google (boleh dihapus; kalau gagal dimuat, browser pakai font sistem) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Biodata Siswa</title>
 
-<!-- BAGIAN 1: CSS (TAMPILAN) -->
-<style>
-    :root {
-        --bg: #ff69b4;
-        --kartu: #ffffff;
-        --teks: #14213d;
-        --teks-redup: #5b667a;
-        --garis: #d6dde8;
-        --aksen: #1d4ed8;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 
-    @media (prefers-color-scheme: dark) {
+    <style>
         :root {
             --bg: #ff69b4;
-            --kartu: #172033;
-            --teks: #e8edf6;
-            --teks-redup: #98a4ba;
-            --garis: #2a3650;
-            --aksen: #6c9bff;
+            --kartu: #ffe4ef;
+            --kotak: #fff1f6;
+            --teks: #573747;
+            --teks-redup: #956d80;
+            --garis: #f5bfd5;
+            --aksen: #d96b9c;
         }
-    }
 
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--teks);
-        font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-        line-height: 1.5;
-    }
-
-    .wadah {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 24px 16px 48px;
-    }
-
-    header h1 {
-        margin: 0 0 4px;
-        font-size: 1.75rem;
-        font-weight: 800;
-    }
-
-    header p {
-        margin: 0;
-        color: var(--teks-redup);
-    }
-
-    .kontrol {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin: 20px 0 8px;
-    }
-
-    .kontrol input,
-    .kontrol select {
-        font: inherit;
-        color: var(--teks);
-        background: var(--kartu);
-        border: 1px solid var(--garis);
-        border-radius: 10px;
-        padding: 10px 12px;
-    }
-
-    .kontrol input {
-        flex: 1 1 220px;
-    }
-
-    .kontrol select {
-        flex: 0 1 160px;
-    }
-
-    .kontrol input:focus-visible,
-    .kontrol select:focus-visible {
-        outline: 2px solid var(--aksen);
-        outline-offset: 1px;
-    }
-
-    .jumlah {
-        color: var(--teks-redup);
-        font-size: 0.9rem;
-        margin: 0 0 16px;
-    }
-
-    .daftar {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 16px;
-    }
-
-    .kartu {
-        background: var(--kartu);
-        border: 1px solid var(--garis);
-        border-radius: 14px;
-        overflow: hidden;
-    }
-
-    .pita {
-        height: 56px;
-        background: hsl(var(--hue) 65% 45%);
-    }
-
-    .isi {
-        padding: 0 16px 16px;
-        text-align: center;
-    }
-
-    .foto {
-        width: 76px;
-        height: 76px;
-        margin: -38px auto 8px;
-        border-radius: 50%;
-        border: 4px solid var(--kartu);
-        background: hsl(var(--hue) 55% 88%);
-        color: hsl(var(--hue) 65% 28%);
-        display: grid;
-        place-items: center;
-        font-weight: 800;
-        font-size: 1.5rem;
-        overflow: hidden;
-    }
-
-    .foto img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .nama {
-        margin: 0;
-        font-size: 1.05rem;
-        font-weight: 800;
-    }
-
-    .nis {
-        margin: 0 0 12px;
-        color: var(--teks-redup);
-        font-size: 0.85rem;
-    }
-
-    .rincian {
-        margin: 0;
-        text-align: left;
-        font-size: 0.9rem;
-    }
-
-    .rincian div {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 6px 0;
-        border-top: 1px solid var(--garis);
-    }
-
-    .rincian dt {
-        color: var(--teks-redup);
-    }
-
-    .rincian dd {
-        margin: 0;
-        font-weight: 600;
-        text-align: right;
-    }
-
-    .pesan {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 40px 16px;
-        color: var(--teks-redup);
-    }
-
-    .pesan.galat {
-        color: #b42318;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .pesan.galat {
-            color: #ff8b80;
+        * {
+            box-sizing: border-box;
         }
-    }
-</style>
 
-</head><body>
-    <div class="wadah">
-        <header>
-            <h1>Biodata Siswa</h1>
-            <p>Cari siswa berdasarkan nama atau NIS.</p>
-        </header>    <div class="kontrol">
-        <input
-            id="cari"
-            type="search"
-            placeholder="Cari nama atau NIS"
-            aria-label="Cari nama atau NIS"
-        >
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--teks);
+        }
 
-        <select id="filterKelas" aria-label="Filter kelas">
-            <option value="">Semua kelas</option>
-        </select>
-    </div>
+        .wadah {
+            max-width: 1000px;
+            margin: auto;
+        }
 
-    <p id="jumlah" class="jumlah" aria-live="polite"></p>
-    <main id="daftar" class="daftar"></main>
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        header h1 {
+            margin-bottom: 8px;
+        }
+
+        .form-box,
+        .daftar-box,
+        .kontrol,
+        .jumlah,
+        .kartu {
+            background: var(--kartu);
+            border: 1px solid var(--garis);
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid var(--garis);
+            border-radius: 9px;
+            background: var(--kotak);
+            color: var(--teks);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            min-height: 75px;
+            resize: vertical;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        button {
+            padding: 11px 17px;
+            border: none;
+            border-radius: 9px;
+            background: var(--aksen);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .status {
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .kontrol {
+            display: grid;
+            grid-template-columns: 1fr 180px;
+            gap: 10px;
+        }
+
+        .kontrol input,
+        .kontrol select {
+            margin: 0;
+        }
+
+        .jumlah {
+            font-weight: bold;
+        }
+
+        .daftar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .kartu {
+            margin: 0;
+            padding: 15px;
+        }
+
+        .nama {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .rincian {
+            color: var(--teks-redup);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .daftar-sederhana {
+            display: grid;
+            gap: 10px;
+        }
+
+        .item-sederhana {
+            padding: 12px;
+            border: 1px solid var(--garis);
+            background: var(--kotak);
+            border-radius: 10px;
+        }
+
+        .kosong {
+            color: var(--teks-redup);
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 550px) {
+            body {
+                padding: 12px;
+            }
+
+            .kontrol {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="wadah">
+
+    <header>
+        <h1>Data Siswa</h1>
+        <p>Website Informasi Data Sekolah</p>
+    </header>
+
+    <!-- FORM TAMBAH SISWA -->
+    <section class="form-box">
+        <h2>Tambah Data Siswa</h2>
+
+        <form id="formSiswa">
+            <div class="form-grid">
+                <div>
+                    <label>NIS</label>
+                    <input type="text" id="nis" placeholder="Masukkan NIS" required>
+                </div>
+
+                <div>
+                    <label>Nama Siswa</label>
+                    <input type="text" id="namaSiswa" placeholder="Masukkan nama" required>
+                </div>
+
+                <div>
+                    <label>Kelas</label>
+                    <input type="text" id="kelas" placeholder="Contoh: XI TKJ 1" required>
+                </div>
+
+                <div>
+                    <label>Jenis Kelamin</label>
+                    <select id="jkSiswa" required>
+                        <option value="">Pilih jenis kelamin</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Tanggal Lahir</label>
+                    <input type="date" id="tanggalLahir">
+                </div>
+
+                <div>
+                    <label>Foto URL</label>
+                    <input type="text" id="fotoSiswa" placeholder="Link foto (opsional)">
+                </div>
+            </div>
+
+            <label>Alamat</label>
+            <textarea id="alamatSiswa" placeholder="Masukkan alamat"></textarea>
+
+            <button type="submit">Tambah Siswa</button>
+            <p class="status" id="statusSiswa"></p>
+        </form>
+    </section>
+
+    <!-- FORM TAMBAH GURU -->
+    <section class="form-box">
+        <h2>Tambah Data Guru</h2>
+
+        <form id="formGuru">
+            <div class="form-grid">
+                <div>
+                    <label>NIP</label>
+                    <input type="text" id="nip" placeholder="Masukkan NIP (opsional)">
+                </div>
+
+                <div>
+                    <label>Nama Guru</label>
+                    <input type="text" id="namaGuru" placeholder="Masukkan nama guru" required>
+                </div>
+
+                <div>
+                    <label>Jenis Kelamin</label>
+                    <select id="jkGuru">
+                        <option value="">Pilih jenis kelamin</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Alamat</label>
+            <textarea id="alamatGuru" placeholder="Masukkan alamat guru"></textarea>
+
+            <button type="submit">Tambah Guru</button>
+            <p class="status" id="statusGuru"></p>
+        </form>
+    </section>
+
+    <!-- FORM TAMBAH MAPEL -->
+    <section class="form-box">
+        <h2>Tambah Mata Pelajaran</h2>
+
+        <form id="formMapel">
+            <div class="form-grid">
+                <div>
+                    <label>Kode Mapel</label>
+                    <input type="text" id="kodeMapel" placeholder="Kode mapel (opsional)">
+                </div>
+
+                <div>
+                    <label>Nama Mapel</label>
+                    <input type="text" id="namaMapel" placeholder="Masukkan nama mapel" required>
+                </div>
+            </div>
+
+            <button type="submit">Tambah Mapel</button>
+            <p class="status" id="statusMapel"></p>
+        </form>
+    </section>
+
+    <!-- DAFTAR SISWA -->
+    <section class="daftar-box">
+        <h2>Daftar Siswa</h2>
+
+        <div class="kontrol">
+            <input type="text" id="cari" placeholder="Cari nama atau NIS...">
+
+            <select id="filterKelas">
+                <option value="">Semua kelas</option>
+            </select>
+        </div>
+
+        <div class="jumlah" id="jumlah">Memuat data...</div>
+        <div class="daftar" id="daftar"></div>
+    </section>
+
+    <!-- DAFTAR GURU -->
+    <section class="daftar-box">
+        <h2>Daftar Guru</h2>
+        <div class="daftar-sederhana" id="daftarGuru">
+            <p class="kosong">Memuat data guru...</p>
+        </div>
+    </section>
+
+    <!-- DAFTAR MAPEL -->
+    <section class="daftar-box">
+        <h2>Daftar Mata Pelajaran</h2>
+        <div class="daftar-sederhana" id="daftarMapel">
+            <p class="kosong">Memuat data mapel...</p>
+        </div>
+    </section>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-
 <script>
-    // LANGKAH 1: PENGATURAN
+    // KONEKSI SUPABASE
     const SUPABASE_URL = "https://bglvegqdstbffqypdncn.supabase.co";
+
     const SUPABASE_ANON_KEY = "sb_publishable_yaA9ZSmOQG4KoycIGfzAnQ_E4g9j_yS";
 
-    const TAMPILKAN = {
-        jenisKelamin: true,
-        tanggalLahir: false,
-        alamat: false
-    };
-
-    // LANGKAH 2: HUBUNGKAN KE SUPABASE
     const db = supabase.createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY
     );
 
-    const elDaftar = document.getElementById("daftar");
-    const elJumlah = document.getElementById("jumlah");
-    const elCari = document.getElementById("cari");
-    const elKelas = document.getElementById("filterKelas");
-
     let semuaSiswa = [];
 
-    // LANGKAH 3: AMBIL DATA
+    function el(id) {
+        return document.getElementById(id);
+    }
+
+    // MEMUAT DATA SISWA
     async function muatData() {
-        tampilkanPesan("Memuat data siswa...");
+        el("daftar").innerHTML = '<p class="kosong">Memuat data...</p>';
 
         const { data, error } = await db
             .from("siswa")
-            .select("nis, nama, kelas, jenis_kelamin, tanggal_lahir, alamat, foto_url")
-            .order("nama");
+            .select("*")
+            .order("nama", { ascending: true });
 
         if (error) {
+            el("daftar").innerHTML = '<p class="kosong">Gagal memuat data siswa.</p>';
+            el("jumlah").textContent = "Data tidak berhasil dimuat.";
             console.error(error);
-
-            tampilkanPesan(
-                "Data tidak bisa dimuat. Periksa URL dan anon key, nama tabel, serta policy RLS di Supabase.",
-                true
-            );
-
             return;
         }
 
-        semuaSiswa = data;
+        semuaSiswa = data || [];
+
         isiPilihanKelas();
         tampilkanSiswa();
     }
 
-    // LANGKAH 4: TAMPILKAN KARTU
-    function tampilkanSiswa() {
-        const kataKunci = elCari.value.trim().toLowerCase();
-        const kelasDipilih = elKelas.value;
+    // PILIHAN KELAS
+    function isiPilihanKelas() {
+        const pilihan = el("filterKelas");
+        const kelasTerpilih = pilihan.value;
 
-        const hasil = semuaSiswa.filter((s) => {
-            const cocokKelas =
-                !kelasDipilih || s.kelas === kelasDipilih;
+        const daftarKelas = [...new Set(
+            semuaSiswa.map(s => s.kelas).filter(Boolean)
+        )].sort();
 
-            const cocokCari =
-                !kataKunci ||
-                s.nama.toLowerCase().includes(kataKunci) ||
-                s.nis.toLowerCase().includes(kataKunci);
+        pilihan.innerHTML = '<option value="">Semua kelas</option>';
 
-            return cocokKelas && cocokCari;
+        daftarKelas.forEach(k => {
+            const option = document.createElement("option");
+            option.value = k;
+            option.textContent = k;
+            pilihan.appendChild(option);
         });
 
-        elJumlah.textContent =
-            hasil.length + " dari " + semuaSiswa.length + " siswa";
+        pilihan.value = kelasTerpilih;
+    }
 
-        elDaftar.replaceChildren();
+    // MENAMPILKAN SISWA
+    function tampilkanSiswa() {
+        const kata = el("cari").value.toLowerCase();
+        const kelas = el("filterKelas").value;
+
+        const hasil = semuaSiswa.filter(s => {
+            const cocokNama = (s.nama || "").toLowerCase().includes(kata);
+            const cocokNis = (s.nis || "").toString().toLowerCase().includes(kata);
+            const cocokKelas = !kelas || s.kelas === kelas;
+
+            return (cocokNama || cocokNis) && cocokKelas;
+        });
+
+        el("jumlah").textContent =
+            "Jumlah siswa: " + hasil.length;
+
+        el("daftar").innerHTML = "";
 
         if (hasil.length === 0) {
-            tampilkanPesan(
-                semuaSiswa.length === 0
-                    ? "Belum ada data siswa. Tambahkan data lewat Table Editor di Supabase."
-                    : "Tidak ada siswa yang cocok. Coba kata kunci atau kelas lain."
-            );
-
+            el("daftar").innerHTML =
+                '<p class="kosong">Data siswa tidak ditemukan.</p>';
             return;
         }
 
-        hasil.forEach((s) => {
-            elDaftar.appendChild(buatKartu(s));
+        hasil.forEach(s => {
+            const kartu = document.createElement("div");
+            kartu.className = "kartu";
+
+            const nama = document.createElement("div");
+            nama.className = "nama";
+            nama.textContent = s.nama || "Tanpa nama";
+
+            const rincian = document.createElement("div");
+            rincian.className = "rincian";
+            rincian.textContent =
+                "NIS: " + (s.nis || "-") +
+                " | Kelas: " + (s.kelas || "-") +
+                " | Jenis Kelamin: " + (s.jenis_kelamin || "-");
+
+            kartu.appendChild(nama);
+            kartu.appendChild(rincian);
+
+            el("daftar").appendChild(kartu);
         });
     }
 
-    function buatKartu(s) {
-        const kartu = el("article", "kartu");
-        kartu.style.setProperty("--hue", warnaKelas(s.kelas));
+    // TAMBAH SISWA
+    el("formSiswa").addEventListener("submit", async function(e) {
+        e.preventDefault();
 
-        kartu.appendChild(el("div", "pita"));
+        el("statusSiswa").textContent = "Menyimpan data...";
 
-        const isi = el("div", "isi");
-        const foto = el("div", "foto");
+        const dataSiswa = {
+            nis: el("nis").value.trim(),
+            nama: el("namaSiswa").value.trim(),
+            kelas: el("kelas").value.trim(),
+            jenis_kelamin: el("jkSiswa").value,
+            tanggal_lahir: el("tanggalLahir").value || null,
+            alamat: el("alamatSiswa").value.trim(),
+            foto_url: el("fotoSiswa").value.trim() || null
+        };
 
-        if (s.foto_url) {
-            const gambar = document.createElement("img");
+        const { error } = await db
+            .from("siswa")
+            .insert([dataSiswa]);
 
-            gambar.src = s.foto_url;
-            gambar.alt = "Foto " + s.nama;
-            gambar.loading = "lazy";
-
-            gambar.onerror = () =>
-                foto.replaceChildren(
-                    document.createTextNode(inisial(s.nama))
-                );
-
-            foto.appendChild(gambar);
-        } else {
-            foto.textContent = inisial(s.nama);
-        }
-
-        isi.appendChild(foto);
-        isi.appendChild(el("h2", "nama", s.nama));
-        isi.appendChild(el("p", "nis", "NIS " + s.nis));
-
-        const rincian = el("dl", "rincian");
-
-        tambahBaris(rincian, "Kelas", s.kelas);
-
-        if (TAMPILKAN.jenisKelamin) {
-            tambahBaris(rincian, "Jenis kelamin", s.jenis_kelamin);
-        }
-
-        if (TAMPILKAN.tanggalLahir) {
-            tambahBaris(
-                rincian,
-                "Tanggal lahir",
-                formatTanggal(s.tanggal_lahir)
-            );
-        }
-
-        if (TAMPILKAN.alamat) {
-            tambahBaris(rincian, "Alamat", s.alamat);
-        }
-
-        isi.appendChild(rincian);
-        kartu.appendChild(isi);
-
-        return kartu;
-    }
-
-    function el(tag, kelas, teks) {
-        const e = document.createElement(tag);
-
-        if (kelas) e.className = kelas;
-        if (teks !== undefined && teks !== null) {
-            e.textContent = String(teks);
-        }
-
-        return e;
-    }
-
-    function tambahBaris(dl, label, nilai) {
-        if (nilai === undefined || nilai === null || nilai === "") {
+        if (error) {
+            el("statusSiswa").textContent =
+                "Gagal menambahkan siswa: " + error.message;
             return;
         }
 
-        const baris = el("div");
+        el("statusSiswa").textContent = "Data siswa berhasil ditambahkan!";
+        el("formSiswa").reset();
 
-        baris.appendChild(el("dt", "", label));
-        baris.appendChild(el("dd", "", nilai));
+        await muatData();
+    });
 
-        dl.appendChild(baris);
-    }
+    // MEMUAT DATA GURU
+    async function muatGuru() {
+        const { data, error } = await db
+            .from("guru")
+            .select("nip,nama,jenis_kelamin,alamat")
+            .order("nama", { ascending: true });
 
-    function inisial(nama) {
-        return String(nama || "?")
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 2)
-            .map((k) => k[0].toUpperCase())
-            .join("");
-    }
-
-    function warnaKelas(kelas) {
-        let total = 0;
-
-        for (const huruf of String(kelas || "")) {
-            total += huruf.charCodeAt(0);
+        if (error) {
+            el("daftarGuru").textContent = "Gagal memuat data guru.";
+            console.error(error);
+            return;
         }
 
-        return (total * 47) % 360;
-    }
+        el("daftarGuru").innerHTML = "";
 
-    function formatTanggal(teks) {
-        if (!teks) return "";
+        if (!data || data.length === 0) {
+            el("daftarGuru").innerHTML =
+                '<p class="kosong">Belum ada data guru.</p>';
+            return;
+        }
 
-        return new Date(teks + "T00:00:00")
-            .toLocaleDateString("id-ID", {
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            });
-    }
+        data.forEach(g => {
+            const item = document.createElement("div");
+            item.className = "item-sederhana";
 
-    function tampilkanPesan(teks, galat = false) {
-        elDaftar.replaceChildren(
-            el("p", "pesan" + (galat ? " galat" : ""), teks)
-        );
-    }
+            const nama = document.createElement("strong");
+            nama.textContent = g.nama || "Tanpa nama";
 
-    function isiPilihanKelas() {
-        const daftarKelas = [
-            ...new Set(
-                semuaSiswa
-                    .map((s) => s.kelas)
-                    .filter(Boolean)
-            )
-        ].sort();
+            const rincian = document.createElement("div");
+            rincian.className = "rincian";
+            rincian.textContent =
+                "NIP: " + (g.nip || "-") +
+                " | Jenis Kelamin: " + (g.jenis_kelamin || "-");
 
-        daftarKelas.forEach((k) => {
-            const opsi = el("option", "", k);
+            item.appendChild(nama);
+            item.appendChild(rincian);
 
-            opsi.value = k;
-            elKelas.appendChild(opsi);
+            el("daftarGuru").appendChild(item);
         });
     }
 
-    elCari.addEventListener("input", tampilkanSiswa);
-    elKelas.addEventListener("change", tampilkanSiswa);
+    // TAMBAH GURU
+    el("formGuru").addEventListener("submit", async function(e) {
+        e.preventDefault();
 
+        el("statusGuru").textContent = "Menyimpan data...";
+
+        const dataGuru = {
+            nip: el("nip").value.trim() || null,
+            nama: el("namaGuru").value.trim(),
+            jenis_kelamin: el("jkGuru").value || null,
+            alamat: el("alamatGuru").value.trim() || null
+        };
+
+        const { error } = await db
+            .from("guru")
+            .insert([dataGuru]);
+
+        if (error) {
+            el("statusGuru").textContent =
+                "Gagal menambahkan guru: " + error.message;
+            return;
+        }
+
+        el("statusGuru").textContent = "Data guru berhasil ditambahkan!";
+        el("formGuru").reset();
+
+        await muatGuru();
+    });
+
+    // MEMUAT DATA MAPEL
+    async function muatMapel() {
+        const { data, error } = await db
+            .from("mapel")
+            .select("kode_mapel,nama_mapel")
+            .order("nama_mapel", { ascending: true });
+
+        if (error) {
+            el("daftarMapel").textContent = "Gagal memuat data mapel.";
+            console.error(error);
+            return;
+        }
+
+        el("daftarMapel").innerHTML = "";
+
+        if (!data || data.length === 0) {
+            el("daftarMapel").innerHTML =
+                '<p class="kosong">Belum ada mata pelajaran.</p>';
+            return;
+        }
+
+        data.forEach(m => {
+            const item = document.createElement("div");
+            item.className = "item-sederhana";
+
+            const nama = document.createElement("strong");
+            nama.textContent = m.nama_mapel || "Tanpa nama";
+
+            const kode = document.createElement("div");
+            kode.className = "rincian";
+            kode.textContent = "Kode Mapel: " + (m.kode_mapel || "-");
+
+            item.appendChild(nama);
+            item.appendChild(kode);
+
+            el("daftarMapel").appendChild(item);
+        });
+    }
+
+    // TAMBAH MAPEL
+    el("formMapel").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        el("statusMapel").textContent = "Menyimpan data...";
+
+        const dataMapel = {
+            kode_mapel: el("kodeMapel").value.trim() || null,
+            nama_mapel: el("namaMapel").value.trim()
+        };
+
+        const { error } = await db
+            .from("mapel")
+            .insert([dataMapel]);
+
+        if (error) {
+            el("statusMapel").textContent =
+                "Gagal menambahkan mapel: " + error.message;
+            return;
+        }
+
+        el("statusMapel").textContent = "Mata pelajaran berhasil ditambahkan!";
+        el("formMapel").reset();
+
+        await muatMapel();
+    });
+
+    // PENCARIAN DAN FILTER
+    el("cari").addEventListener("input", tampilkanSiswa);
+    el("filterKelas").addEventListener("change", tampilkanSiswa);
+
+    // JALANKAN SAAT WEBSITE DIBUKA
     muatData();
+    muatGuru();
+    muatMapel();
 </script>
 
 </body>
