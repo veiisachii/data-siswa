@@ -680,12 +680,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_yaA9ZSmOQG4KoycIGfzAnQ_E4g9j_yS";
   }
 } else {
   ({ error } = await db.from(table).insert([record]));
-}
-
-         else {
-          ({ error } = await db.from(table).insert([record]));
-        }
-
+} 
         if (error) {
           console.error("Gagal menyimpan data:", error);
           if (error.code === "23505") {
