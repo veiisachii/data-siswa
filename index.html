@@ -660,6 +660,27 @@ const SUPABASE_ANON_KEY = "sb_publishable_yaA9ZSmOQG4KoycIGfzAnQ_E4g9j_yS";
         const table = isTeacher ? "guru" : "siswa";
         const key = isTeacher ? "nip" : "nis";
         let error;
+        if (editing && originalRecord) {
+  const originalKey = isTeacher ? originalRecord.nip : originalRecord.nis;
+
+  const result = await db
+    .from(table)
+    .update(record)
+    .eq(key, originalKey)
+    .select();
+
+  error = result.error;
+
+  if (!error && (!result.data || result.data.length === 0)) {
+    setFormStatus(
+      "Data tidak berubah. Periksa izin UPDATE pada Supabase.",
+      "error"
+    );
+    return;
+  }
+} else {
+  ({ error } = await db.from(table).insert([record]));
+}
 
          else {
           ({ error } = await db.from(table).insert([record]));
