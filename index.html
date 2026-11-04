@@ -297,9 +297,10 @@
     "use strict";
 
     // Gunakan publishable/anon key saja. Jangan pernah menaruh service_role key di HTML.
-    const SUPABASE_URL = "https://bglvegqdstbffqypdncn.supabase.co";
+    
+const SUPABASE_URL = "https://bglvegqdstbffqypdncn.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_yaA9ZSmOQG4KoycIGfzAnQ_E4g9j_yS";
-    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const $ = (id) => document.getElementById(id);
 
